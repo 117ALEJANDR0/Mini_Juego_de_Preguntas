@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Narradores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+        }
+        h1 {
+            color: #333;
+        }
+        .game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #add8e6;
+            cursor: pointer;
+        }
+        .options button:hover {
+            background-color: #87cefa;
+        }
+        .feedback {
+            font-size: 1.2em;
+            margin-top: 15px;
+        }
+        .image-container {
+            margin: 10px 0;
+        }
+        .image-container img {
+            width: 100px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>¿Quién narra la historia?</h1>
+    <div class="game-container">
+        <div id="question" class="question"></div>
+        <div class="options" id="optionsContainer"></div>
+        <div id="feedback" class="feedback"></div>
+        <div id="imageContainer" class="image-container" style="display:none;"></div>
+        <button onclick="nextQuestion()" style="display:none;" id="nextButton">Siguiente</button>
+        <div id="finalMessage" class="feedback" style="display:none;"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: "Me miré en el espejo, incapaz de reconocer mi propio reflejo.",
+                answer: "Narrador en primera persona",
+                options: ["Narrador en primera persona", "Narrador omnisciente", "Narrador testigo", "Narrador en tercera persona"],
+                image: "https://i.ibb.co/3rJwB0c/Autodiegetico.jpg"
+            },
+            {
+                text: "Ella caminaba por el sendero, mientras las hojas caían a su alrededor.",
+                answer: "Narrador en tercera persona",
+                options: ["Narrador en tercera persona", "Narrador testigo", "Narrador omnisciente", "Narrador en primera persona"],
+                image: "https://i.ibb.co/1zLQ76F/Extradiegetico.jpg"
+            },
+            {
+                text: "Sabía lo que todos sentían, aunque nunca lo demostraran.",
+                answer: "Narrador omnisciente",
+                options: ["Narrador testigo", "Narrador omnisciente", "Narrador en primera persona", "Narrador en tercera persona"],
+                image: "https://i.ibb.co/kgvH22R/Intradiegetico.jpg"
+            },
+            {
+                text: "Ví cómo Juan corría hacia la puerta, sin saber que estaba a punto de cerrarse.",
+                answer: "Narrador testigo",
+                options: ["Narrador en primera persona", "Narrador testigo", "Narrador en tercera persona", "Narrador omnisciente"],
+                image: "https://i.ibb.co/p2pYwKW/Metadiegetico.jpg"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+
+        function loadQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            document.getElementById("question").innerText = currentQuestion.text;
+            document.getElementById("feedback").innerText = "";
+            document.getElementById("nextButton").style.display = "none";
+            document.getElementById("imageContainer").style.display = "none"; // Ocultar la imagen al cargar la pregunta
+            loadOptions(currentQuestion.options);
+        }
+
+        function loadOptions(options) {
+            const optionsContainer = document.getElementById("optionsContainer");
+            optionsContainer.innerHTML = ''; // Limpiar opciones previas
+
+            // Mezclar opciones
+            const shuffledOptions = options.sort(() => Math.random() - 0.5);
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.innerText = option;
+                button.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selected) {
+            const currentQuestion = questions[currentQuestionIndex];
+            const feedbackElement = document.getElementById("feedback");
+            const imageContainer = document.getElementById("imageContainer");
+
+            if (selected === currentQuestion.answer) {
+                feedbackElement.innerText = "¡Correcto!";
+                feedbackElement.style.color = "green";
+                
+                // Mostrar la imagen
+                const img = document.createElement('img');
+                img.src = currentQuestion.image;
+                img.alt = currentQuestion.answer;
+                imageContainer.innerHTML = ''; // Limpiar contenido previo
+                imageContainer.appendChild(img);
+                imageContainer.style.display = "block"; // Mostrar la imagen
+            } else {
+                feedbackElement.innerText = "Incorrecto, intenta de nuevo.";
+                feedbackElement.style.color = "red";
+            }
+
+            document.getElementById("nextButton").style.display = "block";
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                const finalMessage = document.getElementById("finalMessage");
+                finalMessage.innerHTML = "¡Felicidades! Has terminado el juego.<br>" +
+                    "Si quieres seguir jugando más de estos mini juegos educativos, te invito a que nos sigas en nuestra página de Facebook: " +
+                    "<a href='https://www.facebook.com/share/pd3d52JZJrnizCSA' target='_blank'>Facebook</a>";
+                finalMessage.style.color = "blue"; // Cambiar el color del mensaje final
+                finalMessage.style.display = "block"; // Mostrar mensaje final
+                document.getElementById("nextButton").style.display = "none";
+                document.querySelector(".options").style.display = "none";
+            }
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
